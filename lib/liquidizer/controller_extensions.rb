@@ -17,6 +17,9 @@ module Liquidizer
     end
 
     def render_with_liquid(options = nil, &block)
+      # use normal render if "liquify" has not been called in the controller
+      return render_without_liquid(options, &block) if !self.class.liquify_enabled?
+
       if view_template = liquid_template_for_view(options)
         options ||= {}
         assigns = assigns_for_liquify
@@ -205,6 +208,10 @@ module Liquidizer
       #
       def liquify(options = {})
         self.liquidizer_options = options.reverse_merge(:actions => true, :layout => true)
+      end
+
+      def liquify_enabled?
+        self.liquidizer_options != {}
       end
     end
   end
