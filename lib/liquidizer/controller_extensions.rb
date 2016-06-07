@@ -18,7 +18,10 @@ module Liquidizer
 
     def render_with_liquid(options = nil, &block)
       # use normal render if "liquify" has not been called in the controller
-      return render_without_liquid(options, &block) if !self.class.liquify_enabled?
+      # or if there are no liquid templates available
+      if !self.class.liquify_enabled? || current_liquid_templates.empty?
+        return render_without_liquid(options, &block)
+      end
 
       if view_template = liquid_template_for_view(options)
         options ||= {}
