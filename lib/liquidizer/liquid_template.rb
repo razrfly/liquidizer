@@ -6,7 +6,7 @@ module Liquidizer
 
     module ClassMethods
       def find_by_name(name)
-        first(:conditions => {:name => name}) || find_default_by_name(name)
+        find_by(:name => name) || find_default_by_name(name)
       end
 
       def find_default_by_name(name)
