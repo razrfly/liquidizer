@@ -170,7 +170,7 @@ module Liquidizer
     #   Foo::Bar -> Foo::BarDrop
     def dropify(value)
       if value.respond_to?(:to_liquid)
-        if value.is_a?(Array)
+        if value.respond_to?(:map)
           value.map { |element| dropify(element) }
         else
           value
