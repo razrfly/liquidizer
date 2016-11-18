@@ -152,7 +152,7 @@ module Liquidizer
 
     def assigns_for_liquify
       variable_names = instance_variable_names
-      variable_names -= self.class.protected_instance_variables.to_a
+      variable_names -= self.class::PROTECTED_IVARS.to_a
 
       variable_names.inject({}) do |memo, name|
         assign_name = name[/^@(.*)$/, 1]           # strip @
