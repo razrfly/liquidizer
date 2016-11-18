@@ -169,12 +169,14 @@ module Liquidizer
     #
     #   Foo::Bar -> Foo::BarDrop
     def dropify(value)
-      if value.respond_to?(:to_liquid)
-        if value.respond_to?(:map)
-          value.map { |element| dropify(element) }
-        else
-          value
-        end
+      if value.respond_to?(:map) && (
+        mapped_value = value.map { |element|
+          dropify(element)
+        }).present?
+
+        mapped_value
+      elsif value.respond_to?(:to_liquid)
+        value
       else
         drop_class = infer_drop_class(value)
         drop_class && drop_class.new(value)
