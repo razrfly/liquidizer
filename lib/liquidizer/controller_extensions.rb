@@ -12,7 +12,7 @@ module Liquidizer
         cattr_accessor :liquidizer_options
         self.liquidizer_options ||= {}
 
-        before_filter :set_liquid_file_system
+        before_action :set_liquid_file_system
       end
     end
 
