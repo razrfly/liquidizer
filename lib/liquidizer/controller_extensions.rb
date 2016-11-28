@@ -49,6 +49,11 @@ module Liquidizer
       end
     end
 
+    def template_exists?(name, prefixes = [], partial = false, keys = [], **options)
+      name_with_prefix = [prefixes.first, name].compact.join("/")
+      super || find_liquid_template(name_with_prefix).present?
+    end
+
     private
 
     def liquid_template_for_view(options)
