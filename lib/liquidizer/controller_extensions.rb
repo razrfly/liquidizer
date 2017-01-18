@@ -159,7 +159,7 @@ module Liquidizer
       variable_names = instance_variable_names
       variable_names -= self.class::PROTECTED_IVARS.to_a
 
-      variable_names.inject({}) do |memo, name|
+      assigns = variable_names.inject({}) do |memo, name|
         assign_name = name[/^@(.*)$/, 1]           # strip @
         next memo if assign_name.starts_with?('_') # skip "private" ivars
 
@@ -168,6 +168,12 @@ module Liquidizer
         memo[assign_name] = value if value
         memo
       end
+
+      if params[:page].present?
+        assigns.merge!("current_page" => params[:page])
+      end
+
+      assigns
     end
 
     # Wrap the value in a drop, if it exists. Drop class is infered from the value class:
