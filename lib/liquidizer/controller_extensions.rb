@@ -34,6 +34,7 @@ module Liquidizer
         end
 
         render_without_liquid(options.merge(:text => content))
+        nullify_instance_variables_from_assigns(assigns)
       else
         if layout_template = liquid_template_for_layout(options)
           assigns = assigns_for_liquify
@@ -43,6 +44,7 @@ module Liquidizer
           content = layout_template.render!(assigns.merge('content_for_layout' => content))
 
           render_without_liquid(options.merge(:text => content, :layout => false))
+          nullify_instance_variables_from_assigns(assigns)
         else
           render_without_liquid(options, &block)
         end
@@ -203,6 +205,14 @@ module Liquidizer
 
     def set_liquid_file_system
       Liquid::Template.file_system = FileSystem.new { current_liquid_templates }
+    end
+
+    def nullify_instance_variables_from_assigns(assigns)
+      assigns.keys.reject do |key|
+        key == "current_page"
+      end.each do |key|
+        instance_variable_set("@#{key}", nil)
+      end
     end
 
     module ClassMethods
