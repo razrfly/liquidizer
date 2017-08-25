@@ -2,12 +2,14 @@ require 'liquid'
 require 'liquidizer/support'
 require 'liquidizer/file_system'
 
+
 module Liquidizer
   module ControllerExtensions
     def self.included(base)
       base.class_eval do
         extend ClassMethods
-        alias_method_chain :render, :liquid
+        alias_method :render_without_liquid, :render
+        alias_method :render, :render_with_liquid
 
         cattr_accessor :liquidizer_options
         self.liquidizer_options ||= {}
@@ -33,16 +35,15 @@ module Liquidizer
           options[:layout] = false
         end
 
-        render_without_liquid(options.merge(:text => content))
+        render_without_liquid(options.merge(:html => content.html_safe))
       else
         if layout_template = liquid_template_for_layout(options)
           assigns = assigns_for_liquify
           options ||= {}
-
           content = render_to_string(options.merge(:layout => false))
           content = layout_template.render!(assigns.merge('content_for_layout' => content))
 
-          render_without_liquid(options.merge(:text => content, :layout => false))
+          render_without_liquid(options.merge(:html => content.html_safe, :layout => false))
         else
           render_without_liquid(options, &block)
         end
@@ -116,7 +117,7 @@ module Liquidizer
       end
     end
 
-    UNLIQUIFIABLE_OPTIONS = [:partial, :file, :text, :xml, :json, :js, :inline, :nothing]
+    UNLIQUIFIABLE_OPTIONS = [:partial, :file, :plain, :xml, :json, :js, :inline, :nothing]
 
     def liquifiable_options?(options)
       (options.keys.map(&:to_sym) & UNLIQUIFIABLE_OPTIONS).empty?
