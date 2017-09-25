@@ -188,7 +188,7 @@ module Liquidizer
 
         mapped_value
       elsif value.respond_to?(:to_liquid)
-        value
+        value.to_liquid
       else
         drop_class = infer_drop_class(value)
         drop_class && drop_class.new(value)
